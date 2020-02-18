@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TrashCollectorV2.Models
 {
-    public class Pickups
+    public class Pickup
     {
         [Key]
         public int Id { get; set; }
