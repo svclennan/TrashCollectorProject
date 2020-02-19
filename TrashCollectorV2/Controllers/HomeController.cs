@@ -25,13 +25,13 @@ namespace TrashCollectorV2.Controllers
 
         public IActionResult Index()
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (_userManager.Options.SignIn.RequireConfirmedAccount)
+            try
             {
-                var user = _userManager.FindByIdAsync(userId).Result;
-                var role = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
-                if (role != null)
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
+                    var user = _userManager.FindByIdAsync(userId).Result;
+                    var role = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
                     if (role.ToLower() == "customer")
                     {
                         return RedirectToAction("Index", "Customer");
@@ -47,9 +47,12 @@ namespace TrashCollectorV2.Controllers
                 }
                 return View();
             }
-            return View();
+            catch
+            {
+                return View();
+            }
         }
-        
+
         public IActionResult Privacy()
         {
             return View();
