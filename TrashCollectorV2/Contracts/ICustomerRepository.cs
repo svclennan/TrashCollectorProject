@@ -8,6 +8,8 @@ namespace TrashCollectorV2.Contracts
 {
     public interface ICustomerRepository:IRepositoryBase<Customer>
     {
-
+        Customer GetCustomer(int customerId);
+        void CreateCustomer(Customer customer);
+        void SetPickupDay();
     }
 }

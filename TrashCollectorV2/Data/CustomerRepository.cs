@@ -13,5 +13,15 @@ namespace TrashCollectorV2.Data
         {
 
         }
+
+        public void CreateCustomer(Customer customer)
+        {
+            Create(customer);
+        }
+
+        public Customer GetCustomer(int customerId)
+        {
+            return FindByCondition(a => a.Id == customerId).SingleOrDefault();
+        }
     }
 }

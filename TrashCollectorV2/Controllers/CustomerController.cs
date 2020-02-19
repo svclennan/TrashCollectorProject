@@ -4,11 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TrashCollectorV2.Contracts;
 
 namespace TrashCollectorV2.Controllers
 {
     public class CustomerController : Controller
     {
+        private readonly IRepositoryWrapper _repo;
+        public CustomerController(IRepositoryWrapper repo)
+        {
+            _repo = repo;
+        }
         // GET: Customer
         public ActionResult Index()
         {

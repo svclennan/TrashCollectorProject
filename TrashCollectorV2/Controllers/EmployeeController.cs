@@ -4,12 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TrashCollectorV2.Contracts;
 
 namespace TrashCollectorV2.Controllers
 {
     public class EmployeeController : Controller
     {
-        
+        private readonly IRepositoryWrapper _repo;
+        public EmployeeController(IRepositoryWrapper repo)
+        {
+            _repo = repo;
+        }
         // GET: Employee
         public ActionResult Index()
         {
