@@ -23,7 +23,12 @@ namespace TrashCollectorV2.Controllers
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (_repo.Customer.FindByCondition(a => a.UserId == userId).Any())
             {
-                return View();
+                ViewModel viewModel = new ViewModel();
+                var customer = _repo.Customer.FindByCondition(b => b.UserId == userId).FirstOrDefault();
+                viewModel.Customer = customer;
+                viewModel.Address = _repo.Address.FindByCondition(c => c.Id == customer.AddressId).FirstOrDefault();
+                viewModel.Account = _repo.Account.FindByCondition(d => d.Id == customer.AccountId).FirstOrDefault();
+                return View(viewModel);
             }
             else
             {

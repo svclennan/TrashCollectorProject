@@ -26,26 +26,30 @@ namespace TrashCollectorV2.Controllers
         public IActionResult Index()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId != null)
+            if (_userManager.Options.SignIn.RequireConfirmedAccount)
             {
                 var user = _userManager.FindByIdAsync(userId).Result;
                 var role = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
-                if (role.ToLower() == "customer")
+                if (role != null)
                 {
-                    return RedirectToAction("Index", "Customer");
+                    if (role.ToLower() == "customer")
+                    {
+                        return RedirectToAction("Index", "Customer");
+                    }
+                    if (role.ToLower() == "employee")
+                    {
+                        return RedirectToAction("Index", "Employee");
+                    }
+                    if (role.ToLower() == "admin")
+                    {
+                        return RedirectToAction("Index", "Employee");
+                    }
                 }
-                if (role.ToLower() == "employee")
-                {
-                    return RedirectToAction("Index", "Employee");
-                }
-                if (role.ToLower() == "admin")
-                {
-                    return RedirectToAction("Index", "Employee");
-                }
+                return View();
             }
             return View();
         }
-
+        
         public IActionResult Privacy()
         {
             return View();
