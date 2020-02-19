@@ -13,5 +13,13 @@ namespace TrashCollectorV2.Data
         {
 
         }
+        public void CreateAddress(Address address)
+        {
+            Create(address);
+        }
+        public Address GetAddress(int addressId)
+        {
+            return FindByCondition(a => a.Id == addressId).SingleOrDefault();
+        }
     }
 }

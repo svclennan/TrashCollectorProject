@@ -12,6 +12,14 @@ namespace TrashCollectorV2.Data
         public AccountRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
         {
         }
+        public void CreateAccount(Account account)
+        {
+            Create(account);
+        }
 
+        public Account GetAccount(int accountId)
+        {
+            return FindByCondition(a => a.Id == accountId).SingleOrDefault();
+        }
     }
 }

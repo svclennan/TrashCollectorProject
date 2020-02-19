@@ -10,6 +10,5 @@ namespace TrashCollectorV2.Contracts
     {
         Customer GetCustomer(int customerId);
         void CreateCustomer(Customer customer);
-        void SetPickupDay();
     }
 }

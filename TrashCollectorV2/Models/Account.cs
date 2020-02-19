@@ -14,7 +14,7 @@ namespace TrashCollectorV2.Models
         public int Balance { get; set; }
         public bool IsSuspended { get; set; }
         [ForeignKey("Pickups")]
-        public int PickupId { get; set; }
+        public int? PickupId { get; set; }
         public Pickup Pickups { get; set; }
     }
 }

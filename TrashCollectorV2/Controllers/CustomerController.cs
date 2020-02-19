@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TrashCollectorV2.Contracts;
+using TrashCollectorV2.Models;
 
 namespace TrashCollectorV2.Controllers
 {
@@ -18,7 +20,15 @@ namespace TrashCollectorV2.Controllers
         // GET: Customer
         public ActionResult Index()
         {
-            return View();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (_repo.Customer.FindByCondition(a => a.UserId == userId).Any())
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Create");
+            }
         }
 
         // GET: Customer/Details/5
@@ -36,11 +46,19 @@ namespace TrashCollectorV2.Controllers
         // POST: Customer/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Customer customer)
         {
             try
             {
-                // TODO: Add insert logic here
+                _repo.Address.CreateAddress(customer.Address);
+                _repo.Save();
+
+                var newCustomer = new Customer();
+                newCustomer.AddressId = _repo.Address.FindByCondition(a => a.Equals(customer.Address)).FirstOrDefault().Id;
+                newCustomer.Name = customer.Name;
+                newCustomer.UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                _repo.Customer.CreateCustomer(newCustomer);
+                _repo.Save();
 
                 return RedirectToAction(nameof(Index));
             }

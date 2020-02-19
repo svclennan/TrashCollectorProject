@@ -8,5 +8,7 @@ namespace TrashCollectorV2.Contracts
 {
     public interface IPickupRepository : IRepositoryBase<Pickup>
     {
+        public void CreatePickup(Pickup pickup);
+        public Pickup GetPickup(int pickupId);
     }
 }

@@ -13,5 +13,13 @@ namespace TrashCollectorV2.Data
         {
 
         }
+        public void CreatePickup(Pickup pickup)
+        {
+            Create(pickup);
+        }
+        public Pickup GetPickup(int pickupId)
+        {
+            return FindByCondition(a => a.Id == pickupId).SingleOrDefault();
+        }
     }
 }
