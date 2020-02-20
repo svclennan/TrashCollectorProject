@@ -16,6 +16,8 @@ namespace TrashCollectorV2.Models
         public bool IsSuspended { get; set; }
         [Display(Name = "Day Of Pickup")]
         public DayOfWeek PickupDay { get; set; }
+        [Display(Name = "Next Pickup")]
+        public DateTime NextPickup { get; set; }
         [Display(Name = "One Time Pickup")]
         public DateTime OneTimePickup { get; set; }
         [Display(Name = "Start of Suspension Date")]

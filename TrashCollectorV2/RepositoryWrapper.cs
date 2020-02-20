@@ -14,7 +14,6 @@ namespace TrashCollectorV2
         private IAddressRepository _address;
         private ICustomerRepository _customer;
         private IEmployeeRepository _employee;
-        private IPickupRepository _pickup;
         public IAccountRepository Account
         {
             get
