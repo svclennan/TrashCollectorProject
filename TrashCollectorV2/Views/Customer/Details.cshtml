@@ -1,0 +1,55 @@
+﻿@model TrashCollectorV2.Models.ViewModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>@Html.DisplayFor(model => model.Customer.Name)</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Account.Balance)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Account.Balance)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Account.IsSuspended)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Account.IsSuspended)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Account.PickupDay)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Account.PickupDay)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Account.OneTimePickup)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Account.OneTimePickup)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Account.StartDate)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Account.StartDate)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Account.EndDate)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Account.EndDate)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit">Edit Information</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashCollectorV2.Data;
 
 namespace TrashCollectorV2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200220140604_ChangedDisplayNamesAndPickupDayType")]
+    partial class ChangedDisplayNamesAndPickupDayType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,22 +50,22 @@ namespace TrashCollectorV2.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d80f94a1-aa8c-4a74-8c74-6e44725dfe62",
-                            ConcurrencyStamp = "2fae2a40-5e92-4527-9626-ad344c561e7f",
+                            Id = "c1088a30-df3e-4c63-b09c-dfed1f75c77b",
+                            ConcurrencyStamp = "28589daa-fbe5-4b1d-9e45-3da4afd3cb3d",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "9e9393bd-c063-4c02-8191-a86d314395f7",
-                            ConcurrencyStamp = "b36915b8-5335-45de-bd3d-f5475ad34ed4",
+                            Id = "67ba77ae-ea3a-483b-bc6d-297c9c81f8d6",
+                            ConcurrencyStamp = "6ae1c94f-5afd-4920-b807-57308cc43342",
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         },
                         new
                         {
-                            Id = "95bf92a4-5ed4-4b58-b708-9689ecba0672",
-                            ConcurrencyStamp = "a4e117d9-9ad4-469d-8201-e672a13b5d0a",
+                            Id = "1981b763-c28b-4eb2-935c-148edb9854f1",
+                            ConcurrencyStamp = "7b4d2783-330e-41e7-b779-2ec669fd641e",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -248,22 +250,15 @@ namespace TrashCollectorV2.Data.Migrations
                     b.Property<int>("Balance")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsSuspended")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("OneTimePickup")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PickupDay")
+                    b.Property<int?>("PickupId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("PickupId");
 
                     b.ToTable("Accounts");
                 });
@@ -345,6 +340,30 @@ namespace TrashCollectorV2.Data.Migrations
                     b.ToTable("Employees");
                 });
 
+            modelBuilder.Entity("TrashCollectorV2.Models.Pickup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("OneTimePickup")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PickupDay")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Pickups");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -394,6 +413,13 @@ namespace TrashCollectorV2.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("TrashCollectorV2.Models.Account", b =>
+                {
+                    b.HasOne("TrashCollectorV2.Models.Pickup", "Pickups")
+                        .WithMany()
+                        .HasForeignKey("PickupId");
                 });
 
             modelBuilder.Entity("TrashCollectorV2.Models.Customer", b =>

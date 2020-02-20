@@ -10,6 +10,5 @@ namespace TrashCollectorV2.Models
         public Customer Customer { get; set; }
         public Address Address { get; set; }
         public Account Account { get; set; }
-        public Pickup Pickup { get; set; }
     }
 }

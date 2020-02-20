@@ -59,17 +59,6 @@ namespace TrashCollectorV2
                 return _employee;
             }
         }
-        public IPickupRepository Pickup
-        {
-            get
-            {
-                if (_pickup == null)
-                {
-                    _pickup = new PickupRepository(_context);
-                }
-                return _pickup;
-            }
-        }
         public RepositoryWrapper(ApplicationDbContext context)
         {
             _context = context;

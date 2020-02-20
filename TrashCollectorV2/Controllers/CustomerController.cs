@@ -39,7 +39,20 @@ namespace TrashCollectorV2.Controllers
         // GET: Customer/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            ViewModel viewModel = new ViewModel();
+            try
+            {
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var customer = _repo.Customer.FindByCondition(b => b.UserId == userId).FirstOrDefault();
+                viewModel.Customer = customer;
+                viewModel.Address = _repo.Address.FindByCondition(c => c.Id == customer.AddressId).FirstOrDefault();
+                viewModel.Account = _repo.Account.FindByCondition(d => d.Id == customer.AccountId).FirstOrDefault();
+                return View(viewModel);
+            }
+            catch
+            {
+                return View(viewModel);
+            }
         }
 
         // GET: Customer/Create
@@ -76,6 +89,7 @@ namespace TrashCollectorV2.Controllers
         // GET: Customer/Edit/5
         public ActionResult Edit(int id)
         {
+
             return View();
         }
 
