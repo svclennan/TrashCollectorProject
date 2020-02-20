@@ -51,13 +51,8 @@
                 @Html.DisplayFor(modelItem => Model.Address.ZipCode)
             </td>
             <td>
-                <a asp-action="Details" asp-route-id="@Model.Customer.Id">Account Information</a>
+                <a asp-action="Details">Account Information</a>
             </td>
-            @*<td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>*@
         </tr>
     </tbody>
 </table>

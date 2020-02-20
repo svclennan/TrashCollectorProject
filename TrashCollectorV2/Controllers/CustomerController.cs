@@ -37,7 +37,7 @@ namespace TrashCollectorV2.Controllers
         }
 
         // GET: Customer/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details()
         {
             ViewModel viewModel = new ViewModel();
             try
@@ -87,28 +87,80 @@ namespace TrashCollectorV2.Controllers
         }
 
         // GET: Customer/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit()
         {
-
-            return View();
+            ViewModel viewModel = new ViewModel();
+            try
+            {
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var customer = _repo.Customer.FindByCondition(b => b.UserId == userId).FirstOrDefault();
+                viewModel.Customer = customer;
+                viewModel.Address = _repo.Address.FindByCondition(c => c.Id == customer.AddressId).FirstOrDefault();
+                viewModel.Account = _repo.Account.FindByCondition(d => d.Id == customer.AccountId).FirstOrDefault();
+                return View(viewModel);
+            } 
+            catch
+            {
+                return View(viewModel);
+            }
         }
 
         // POST: Customer/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(ViewModel viewModel)
         {
             try
             {
-                // TODO: Add update logic here
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var customer = _repo.Customer.FindByCondition(b => b.UserId == userId).FirstOrDefault();
+                if (customer.AccountId == null)
+                {
+                    Account account = new Account();
+                    account.IsSuspended = viewModel.Account.IsSuspended;
+                    account.OneTimePickup = viewModel.Account.OneTimePickup;
+                    account.PickupDay = viewModel.Account.PickupDay;
+                    DateTime NextPickup = DateTime.Now;
+                    while (!NextPickup.DayOfWeek.Equals(account.PickupDay))
+                    {
+                        NextPickup = NextPickup.AddDays(1);
+                    }
+                    account.NextPickup = NextPickup;
+                    account.StartDate = viewModel.Account.StartDate;
+                    account.EndDate = viewModel.Account.EndDate;
+                    _repo.Account.Create(account);
+                    _repo.Save();
 
-                return RedirectToAction(nameof(Index));
+                    customer.AccountId = _repo.Account.FindByCondition(a => a.Equals(account)).FirstOrDefault().Id;
+                    _repo.Customer.Update(customer);
+                    _repo.Save();
+                }
+                else
+                {
+                    var account = _repo.Account.GetAccount(customer.AccountId ?? default);
+                    account.IsSuspended = viewModel.Account.IsSuspended;
+                    account.OneTimePickup = viewModel.Account.OneTimePickup;
+                    account.PickupDay = viewModel.Account.PickupDay;
+                    DateTime NextPickup = DateTime.Now;
+                    while (!NextPickup.DayOfWeek.Equals(account.PickupDay))
+                    {
+                        NextPickup = NextPickup.AddDays(1);
+                    }
+                    account.NextPickup = NextPickup;
+                    account.StartDate = viewModel.Account.StartDate;
+                    account.EndDate = viewModel.Account.EndDate; 
+                    //problem here with making a new account rather than updating a current account
+                    _repo.Account.Update(account);
+                    _repo.Save();
+                }
+                return RedirectToAction(nameof(Details));
             }
             catch
             {
-                return View();
+                return View(viewModel);
             }
         }
+
 
         // GET: Customer/Delete/5
         public ActionResult Delete(int id)

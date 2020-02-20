@@ -28,7 +28,7 @@ namespace TrashCollectorV2.Controllers
             try
             {
                 var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                if (!_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
                     var user = _userManager.FindByIdAsync(userId).Result;
                     var role = _userManager.GetRolesAsync(user).Result.FirstOrDefault();

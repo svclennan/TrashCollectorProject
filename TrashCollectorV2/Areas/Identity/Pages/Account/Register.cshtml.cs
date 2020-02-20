@@ -123,6 +123,8 @@ namespace TrashCollectorV2.Areas.Identity.Pages.Account
                 }
             }
 
+            var roles = _roleManager.Roles;
+            Roles = new SelectList(roles, "Name", "Name");
             // If we got this far, something failed, redisplay form
             return Page();
         }
