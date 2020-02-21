@@ -1,0 +1,66 @@
+﻿@model TrashCollectorV2.Models.ViewModel
+
+@{
+    ViewData["Title"] = "FilterByDay";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Filter By Day</h1>
+
+<div>
+    <form asp-action="FilterByDay">
+        <div class="form-group">
+            <select class="form-control-sm" asp-for="FilterDay">
+                <option value="0">Sunday</option>
+                <option value="1">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+            </select>
+            <div>
+                <br />
+                <input type="submit" value="Search" class="btn btn-outline-primary" />
+            </div>
+        </div>
+    </form>
+</div>
+@if (Model.Customers.Count != 0 && Model.FilterDay != null)
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>
+                    Customer
+                </th>
+                <th>
+                    Delivery Day
+                </th>
+                <th>
+                    ZIP Code
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Customers)
+            {
+                <tr class="table-active">
+                    <td>
+                        @item.Name
+                    </td>
+                    <td>
+                        @item.Account.PickupDay
+                    </td>
+                    <td>
+                        @item.Address.ZipCode
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h6>There are no customers on @Model.FilterDay</h6>
+}

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TrashCollectorV2.Contracts;
+using TrashCollectorV2.Models;
 
 namespace TrashCollectorV2.Controllers
 {
@@ -20,7 +21,7 @@ namespace TrashCollectorV2.Controllers
         public ActionResult Index()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (_repo.Customer.FindByCondition(a => a.UserId == userId).Any())
+            if (_repo.Employee.FindByCondition(a => a.UserId == userId).Any())
             {
                 var employee = _repo.Employee.FindByCondition(b => b.UserId == userId).FirstOrDefault();
                 var customers = _repo.Customer.GetCustomerIncludeAll();
@@ -50,13 +51,6 @@ namespace TrashCollectorV2.Controllers
             }
             
         }
-
-        // GET: Employee/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
         // GET: Employee/Create
         public ActionResult Create()
         {
@@ -66,11 +60,17 @@ namespace TrashCollectorV2.Controllers
         // POST: Employee/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Employee employee)
         {
             try
             {
-                // TODO: Add insert logic here
+                var newEmployee = new Employee();
+                newEmployee.Name = employee.Name;
+                newEmployee.ZipCode = employee.ZipCode;
+                newEmployee.UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                _repo.Employee.CreateEmployee(newEmployee);
+                _repo.Save();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -80,50 +80,49 @@ namespace TrashCollectorV2.Controllers
             }
         }
 
-        // GET: Employee/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Confirm(int accountId)
         {
-            return View();
+            try
+            {
+                var account = _repo.Account.FindByCondition(a => a.Id == accountId).FirstOrDefault();
+                if (account.NextPickup.Date == DateTime.Now.Date)
+                {
+                    account.NextPickup = account.NextPickup.AddDays(7);
+                }
+                else if (account.OneTimePickup.Date == DateTime.Now.Date)
+                {
+                    account.OneTimePickup = account.OneTimePickup.AddYears(1);
+                }
+                account.Balance += 20;
+                _repo.Account.Update(account);
+                _repo.Save();
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return RedirectToAction("Index");
+            }
         }
 
-        // POST: Employee/Edit/5
+        public ActionResult FilterByDay()
+        {
+            ViewModel customers = new ViewModel();
+            customers.Customers = _repo.Customer.GetCustomerIncludeAll();
+            return View(customers);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult FilterByDay(ViewModel viewModel)
         {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var customers = _repo.Customer.GetCustomerIncludeAll();
+            customers = customers.Where(a => a.Account.PickupDay == viewModel.FilterDay).ToList();
+            viewModel.Customers = customers;
+            return View(viewModel);
         }
 
-        // GET: Employee/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+        //TODO: Filter by day view/controller
 
-        // POST: Employee/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //TODO: google maps api on details of customer
     }
 }

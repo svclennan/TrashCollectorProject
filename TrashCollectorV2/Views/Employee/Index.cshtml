@@ -4,9 +4,9 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+<br />
 <h1>List of today's Customers</h1>
-
+<br />
 
 <table class="table">
     <thead>
@@ -30,9 +30,11 @@
                 @Html.DisplayFor(modelItem => item.Address.StreetAddress)
             </td>
             <td>
-                <a class = "btn" asp-action="Confirm">Confirm Pickup</a>
+                <a class = "btn btn-outline-success" asp-action="Confirm" asp-route-accountId="@item.AccountId">Confirm Pickup</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+<a asp-action="FilterByDay" class="btn btn-outline-info">Filter Customer Database</a>
