@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,36 @@ namespace TrashCollectorV2.Controllers
         // GET: Employee
         public ActionResult Index()
         {
-            return View();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (_repo.Customer.FindByCondition(a => a.UserId == userId).Any())
+            {
+                var employee = _repo.Employee.FindByCondition(b => b.UserId == userId).FirstOrDefault();
+                var customers = _repo.Customer.GetCustomerIncludeAll();
+                var customersInArea = customers.Where(a => a.Address.ZipCode == employee.ZipCode).ToList();
+                var activeCustomers = new List<Models.Customer>();
+                foreach (var item in customersInArea)
+                {
+                    if (item.Account.IsSuspended == true && !(DateTime.Now.CompareTo(item.Account.StartDate) > 0 && DateTime.Now.CompareTo(item.Account.EndDate) < 0))
+                    {
+                        activeCustomers.Add(item);
+                    }
+                    else if (item.Account.IsSuspended == false)
+                    {
+                        activeCustomers.Add(item);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                var customersWithTodayPickup = activeCustomers.Where(a => a.Account.NextPickup.Date == DateTime.Now.Date || a.Account.OneTimePickup.Date == DateTime.Now.Date).ToList();
+                return View(customersWithTodayPickup);
+            }
+            else
+            {
+                return RedirectToAction("Create");
+            }
+            
         }
 
         // GET: Employee/Details/5

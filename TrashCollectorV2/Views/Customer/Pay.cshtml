@@ -1,0 +1,18 @@
+﻿@model TrashCollectorV2.Models.Account
+@{
+    ViewData["Title"] = "Pay";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Pay</h1>
+<div class="col-md-4">
+    <form asp-action="Pay">
+        <div>
+            <h3>You owe @Html.DisplayFor(model => model.Balance)</h3>
+            <h5>How much would you like to pay?</h5>
+            <label for="amount" class="control-label">Amount</label>
+            <input class="form-control" name="amount" type="number" min="1" max="@Model.Balance" />
+            <input type="submit" />
+        </div>
+    </form>
+</div>

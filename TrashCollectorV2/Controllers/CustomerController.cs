@@ -160,28 +160,37 @@ namespace TrashCollectorV2.Controllers
                 return View(viewModel);
             }
         }
-
-
-        // GET: Customer/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Customer/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Pay()
         {
             try
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = _repo.Customer.FindByCondition(b => b.UserId == userId).FirstOrDefault();
+                var account = _repo.Account.FindByCondition(a => a.Id == user.AccountId).FirstOrDefault();
+                return View(account);
             }
             catch
             {
-                return View();
+                return RedirectToAction(nameof(Details));
+            }
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Pay(Account account, int amount)
+        {
+            try
+            {
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var customer = _repo.Customer.FindByCondition(b => b.UserId == userId).FirstOrDefault();
+                var userAccount = _repo.Account.FindByCondition(a => a.Id == customer.AccountId).FirstOrDefault();
+                userAccount.Balance -= amount;
+                _repo.Account.Update(userAccount);
+                _repo.Save();
+                return RedirectToAction(nameof(Details));
+            }
+            catch
+            {
+                return View(account);
             }
         }
     }
