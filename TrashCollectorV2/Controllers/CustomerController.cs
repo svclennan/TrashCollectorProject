@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using TrashCollectorV2.Contracts;
 using TrashCollectorV2.Models;
+using Account = TrashCollectorV2.Models.Account;
+using Customer = TrashCollectorV2.Models.Customer;
 
 namespace TrashCollectorV2.Controllers
 {
@@ -148,8 +152,7 @@ namespace TrashCollectorV2.Controllers
                     }
                     account.NextPickup = NextPickup;
                     account.StartDate = viewModel.Account.StartDate;
-                    account.EndDate = viewModel.Account.EndDate; 
-                    //problem here with making a new account rather than updating a current account
+                    account.EndDate = viewModel.Account.EndDate;
                     _repo.Account.Update(account);
                     _repo.Save();
                 }
@@ -167,6 +170,10 @@ namespace TrashCollectorV2.Controllers
                 var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var user = _repo.Customer.FindByCondition(b => b.UserId == userId).FirstOrDefault();
                 var account = _repo.Account.FindByCondition(a => a.Id == user.AccountId).FirstOrDefault();
+
+                var stripePublishKey = api_key.STRIPE_KEY();
+                ViewBag.StripePublishKey = stripePublishKey;
+
                 return View(account);
             }
             catch
@@ -176,22 +183,46 @@ namespace TrashCollectorV2.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Pay(Account account, int amount)
+        public ActionResult Pay(int amount)
         {
             try
             {
-                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var customer = _repo.Customer.FindByCondition(b => b.UserId == userId).FirstOrDefault();
-                var userAccount = _repo.Account.FindByCondition(a => a.Id == customer.AccountId).FirstOrDefault();
-                userAccount.Balance -= amount;
-                _repo.Account.Update(userAccount);
-                _repo.Save();
+                
                 return RedirectToAction(nameof(Details));
             }
             catch
             {
-                return View(account);
+                return View(amount);
             }
+        }
+        [HttpPost]
+        public ActionResult Charge(string stripeEmail, string stripeToken)
+        {
+            var customers = new CustomerService();
+            var charges = new ChargeService();
+
+            var customer = customers.Create(new CustomerCreateOptions
+            {
+                Email = stripeEmail,
+                Source = stripeToken
+            });
+
+            var charge = charges.Create(new ChargeCreateOptions
+            {
+                Amount = 2000,//charge in cents
+                Description = "Sample Charge",
+                Currency = "usd",
+                Customer = customer.Id
+            });
+
+            var allCustomers = _repo.Customer.GetCustomerIncludeAll();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var thisCustomer = allCustomers.Where(b => b.UserId == userId).FirstOrDefault();
+            thisCustomer.Account.Balance -= 20;
+            _repo.Account.Update(thisCustomer.Account);
+            _repo.Save();
+
+            return RedirectToAction(nameof(Details));
         }
     }
 }

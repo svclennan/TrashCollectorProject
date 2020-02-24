@@ -21,20 +21,59 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address.StreetAddress)
-            </td>
-            <td>
-                <a class = "btn btn-outline-success" asp-action="Confirm" asp-route-accountId="@item.AccountId">Confirm Pickup</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address.StreetAddress)
+                </td>
+                <td>
+                    <a class="btn btn-outline-success" asp-action="Confirm" asp-route-accountId="@item.AccountId">Confirm Pickup</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<body onload="initMap()">
+    <div id="map" style="height:450px; width: 100%"></div>
+</body>
+<script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: { lat: 43.0389, lng: -87.9065 }
+        });
+        var geocoder = new google.maps.Geocoder();
+        geocodeAddress(geocoder, map);
+    }
+    function geocodeAddress(geocoder, resultsMap) {
+        var addresses = [];
+        @foreach(var customer in Model)
+        {
+            @:addresses.push("@customer.Address.StreetAddress + @customer.Address.City + @customer.Address.State")
+        }
+        for (i = 0; i < @Model.Count; i++) {
+            var address = addresses[i];
+            geocoder.geocode({ 'address': address }, function (results, status) {
+            if (status === 'OK') {
+                resultsMap.setCenter(results[0].geometry.location);
+                var marker = new google.maps.Marker({
+                    map: resultsMap,
+                    position: results[0].geometry.location
+                });
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+        }
+    }
+</script>
+<script async defer
+        src="@api_key.MY_KEY()">
+</script>
 
 <a asp-action="FilterByDay" class="btn btn-outline-info">Filter Customer Database</a>

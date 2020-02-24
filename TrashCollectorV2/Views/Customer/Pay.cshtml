@@ -3,10 +3,11 @@
     ViewData["Title"] = "Pay";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<script src="https://js.stripe.com/v3/"></script>
 
 <h1>Pay</h1>
 <div class="col-md-4">
-    <form asp-action="Pay">
+    @*<form asp-action="Pay">
         <div>
             <h3>You owe @Html.DisplayFor(model => model.Balance)</h3>
             <h5>How much would you like to pay?</h5>
@@ -14,5 +15,19 @@
             <input class="form-control" name="amount" type="number" min="1" max="@Model.Balance" />
             <input type="submit" />
         </div>
+    </form>*@
+    <form action="Charge" method="POST">
+        <article>
+            <label>Balance due: @Html.DisplayFor(model => model.Balance)</label>
+            <label>Pay $20?</label>
+        </article>
+        <script src="//checkout.stripe.com/v2/checkout.js"
+                class="stripe-button"
+                data-key="@ViewBag.StripePublishKey"
+                data-locale="auto"
+                data-description="Sample Charge"
+                data-amount="2000">
+        </script>
     </form>
+
 </div>

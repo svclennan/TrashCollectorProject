@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TrashCollectorV2.Contracts;
+using Stripe;
 
 namespace TrashCollectorV2
 {
@@ -69,6 +70,8 @@ namespace TrashCollectorV2
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            StripeConfiguration.ApiKey = api_key.STRIPE_SECRET_KEY();
         }
     }
 }
