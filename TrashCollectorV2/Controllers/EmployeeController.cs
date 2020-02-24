@@ -107,7 +107,10 @@ namespace TrashCollectorV2.Controllers
         public ActionResult FilterByDay()
         {
             ViewModel customers = new ViewModel();
-            customers.Customers = _repo.Customer.GetCustomerIncludeAll();
+            var allCustomers = _repo.Customer.GetCustomerIncludeAll();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var employee = _repo.Employee.FindByCondition(b => b.UserId == userId).FirstOrDefault();
+            customers.Customers = allCustomers.Where(a => a.Address.ZipCode == employee.ZipCode).ToList();
             return View(customers);
         }
 
@@ -116,12 +119,20 @@ namespace TrashCollectorV2.Controllers
         public ActionResult FilterByDay(ViewModel viewModel)
         {
             var customers = _repo.Customer.GetCustomerIncludeAll();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var employee = _repo.Employee.FindByCondition(b => b.UserId == userId).FirstOrDefault();
             customers = customers.Where(a => a.Account.PickupDay == viewModel.FilterDay).ToList();
+            customers = customers.Where(a => a.Address.ZipCode == employee.ZipCode).ToList();
             viewModel.Customers = customers;
             return View(viewModel);
         }
 
-        //TODO: Filter by day view/controller
+        public ActionResult Details(int id)
+        {
+            var allCustomers = _repo.Customer.GetCustomerIncludeAll();
+            var customer = allCustomers.Where(a => a.Id == id).FirstOrDefault();
+            return View(customer);
+        }
 
         //TODO: google maps api on details of customer
     }

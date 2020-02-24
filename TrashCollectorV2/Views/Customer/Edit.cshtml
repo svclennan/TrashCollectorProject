@@ -4,6 +4,12 @@
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+    <script type="text/javascript">
+    function ShowHideDiv(checkbox) {
+        var suspensionDate = document.getElementById("suspensionDate");
+        suspensionDate.style.display = checkbox.checked ? "block" : "none";
+    }
+    </script>
 
 <h1>Edit</h1>
 
@@ -30,10 +36,10 @@
                 <input asp-for="Account.OneTimePickup" class="form-control" type="date" />
             </div>
             <div class="form-group">
-                <label asp-for="Account.IsSuspended" class="control-label"></label>
-                <input type="checkbox" asp-for="Account.IsSuspended" class="form-control" />
+                <label asp-for="Account.IsSuspended" class="control-label  suspend"></label>
+                <input type="checkbox" id="checkbox" onClick="ShowHideDiv(this)" asp-for="Account.IsSuspended" />
             </div>
-            <div>
+            <div id="suspensionDate" style="display:none">
                 <div class="form-group">
                     <label asp-for="Account.StartDate" class="control-label"></label>
                     <input asp-for="Account.StartDate" class="form-control" type="date" />

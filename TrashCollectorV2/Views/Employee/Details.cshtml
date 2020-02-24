@@ -1,0 +1,85 @@
+﻿@model TrashCollectorV2.Models.Customer
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" src="~/js/site.js"></script>
+<script type="text/javascript" src="~/js/keys.js">var mykey = config.MY_KEY</script>
+
+<h1>Details</h1>
+
+<div>
+    <h4>@Html.DisplayFor(model => model.Name)</h4>
+    <hr />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Address.StreetAddress)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Address.City)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Address.State)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Address.ZipCode)
+                </th>
+            </tr>
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(model => model.Address.StreetAddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Address.City)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Address.State)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Address.ZipCode)
+                </td>
+            </tr>
+        </thead>
+    </table>
+</div>
+<body onload="initMap()">
+    <div id="map" class="text-center" style="height:450px;"></div>
+</body>
+<script>
+    function initMap() {
+    var mke = { lat: 43.0389, lng: -87.9605 };
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 16,
+        center: mke
+    });
+    var marker = new google.maps.Marker({ position: mke, map: map });
+    var geocoder = new google.maps.Geocoder();
+
+    geocodeAddress(geocoder, map);
+}
+
+function geocodeAddress(geocoder, resultsMap) {
+    var address = "@Model.Address.StreetAddress + @Model.Address.City + @Model.Address.State";
+    geocoder.geocode({ 'address': address }, function (results, status) {
+        if (status === 'OK') {
+            resultsMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+                map: resultsMap,
+                position: results[0].geometry.location
+            });
+        } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+        }
+    });
+}
+</script>
+<script async defer
+        src="@api_key.MY_KEY()">
+</script>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
